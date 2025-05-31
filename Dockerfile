@@ -11,6 +11,11 @@ RUN mvn clean package -DskipTests
 # Step 2: Create a smaller image to run the JAR
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=build /app/target/swapskill-backend-0.0.1-SNAPSHOT.jar .
+
+# ✅ Copy the JAR to the runtime image — correct path
+COPY --from=build /app/target/swapskill-backend-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/target/swapskill-backend-0.0.1-SNAPSHOT.jar"]
+
+# ✅ ENTRYPOINT matches actual location of the JAR file
+ENTRYPOINT ["java", "-jar", "app.jar"]
