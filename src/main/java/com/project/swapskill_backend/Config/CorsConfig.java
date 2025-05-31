@@ -17,7 +17,7 @@ public class CorsConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // "http://localhost:4200"
-        configuration.setAllowedOriginPatterns(List.of("https://683b4b8af2ded0daae29f4d1--swapskill1.netlify.app/"));
+        configuration.setAllowedOriginPatterns(List.of("https://swapskill1.netlify.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
