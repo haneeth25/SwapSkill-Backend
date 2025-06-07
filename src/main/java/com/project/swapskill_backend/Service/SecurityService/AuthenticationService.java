@@ -47,15 +47,29 @@ public class AuthenticationService {
     }
 
     public SignupResponse signup(UserSignup userSignup) {
-        UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
-        userAuthenticationModel.setId(UUID.randomUUID());
-        userAuthenticationModel.setUsername(userSignup.getUsername());
-        userAuthenticationModel.setPassword(userSignup.getPassword());
-        userAuthenticationModel.setEmail(userSignup.getEmail());
-        userAuthenticationModelRepo.save(userAuthenticationModel);
         SignupResponse signupResponse = new SignupResponse();
-        signupResponse.setSignupResponse("User registerd");
-        return signupResponse;
+        if(userAuthenticationModelRepo.findByEmail(userSignup.getEmail())!=null){
+            signupResponse.setSignupResponse("Email exists");
+            System.out.println(signupResponse.getSignupResponse());
+            return signupResponse;
+        }
+        else if(userAuthenticationModelRepo.findByUsername(userSignup.getUsername()) != null){
+            signupResponse.setSignupResponse("User exists");
+            System.out.println(signupResponse.getSignupResponse());
+            return signupResponse;
+
+        }
+        else {
+            UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
+            userAuthenticationModel.setId(UUID.randomUUID());
+            userAuthenticationModel.setUsername(userSignup.getUsername());
+            userAuthenticationModel.setPassword(userSignup.getPassword());
+            userAuthenticationModel.setEmail(userSignup.getEmail());
+            userAuthenticationModelRepo.save(userAuthenticationModel);
+            signupResponse.setSignupResponse("User registerd");
+            System.out.println(signupResponse.getSignupResponse());
+            return signupResponse;
+        }
     }
 
     public LoginResponse login(UserLogin userLogin) throws NoSuchAlgorithmException {
