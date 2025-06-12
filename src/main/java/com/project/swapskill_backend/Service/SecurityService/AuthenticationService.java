@@ -2,8 +2,13 @@ package com.project.swapskill_backend.Service.SecurityService;
 
 import com.project.swapskill_backend.DTO.PasswordResetToken;
 import com.project.swapskill_backend.Exception.EmailNotFoundException;
+import com.project.swapskill_backend.DTO.Request.UserLogin;
+import com.project.swapskill_backend.DTO.Request.UserSignup;
+import com.project.swapskill_backend.DTO.Response.LoginResponse;
+import com.project.swapskill_backend.DTO.Response.SignupResponse;
 import com.project.swapskill_backend.Model.UserAuthenticationModel;
 import com.project.swapskill_backend.Repository.PasswordResetTokenRepo;
+import com.project.swapskill_backend.Repository.UserAuthenticationModelRepo;
 import com.project.swapskill_backend.Repository.UserAuthenticationModelRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +60,10 @@ public class AuthenticationService {
     }
 
     public void forgetPassword(String userEmail) {
-        UserAuthenticationModel user = userAuthenticationModelRepo.findByEmail(userEmail)
-                .orElseThrow(() -> new EmailNotFoundException("User with email " + userEmail + " not found"));
+        UserAuthenticationModel user = userAuthenticationModelRepo.findByEmail(userEmail);
+        if(user == null){
+            throw new EmailNotFoundException("User with email " + userEmail + " not found");
+        }
 
         String token = UUID.randomUUID().toString();
 
@@ -107,5 +114,43 @@ public class AuthenticationService {
         passwordResetTokenRepo.delete(tokenOpt);
 
         return "Password successfully reset.";
+    }
+
+    public SignupResponse signup(UserSignup userSignup) {
+        SignupResponse signupResponse = new SignupResponse();
+        if(userAuthenticationModelRepo.findByEmail(userSignup.getEmail())!=null){
+            signupResponse.setSignupResponse("Email exists");
+            System.out.println(signupResponse.getSignupResponse());
+            return signupResponse;
+        }
+        else if(userAuthenticationModelRepo.findByUsername(userSignup.getUsername()) != null){
+            signupResponse.setSignupResponse("User exists");
+            System.out.println(signupResponse.getSignupResponse());
+            return signupResponse;
+
+        }
+        else {
+            UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
+            userAuthenticationModel.setId(UUID.randomUUID());
+            userAuthenticationModel.setUsername(userSignup.getUsername());
+            userAuthenticationModel.setPassword(userSignup.getPassword());
+            userAuthenticationModel.setEmail(userSignup.getEmail());
+            userAuthenticationModelRepo.save(userAuthenticationModel);
+            signupResponse.setSignupResponse("User registerd");
+            System.out.println(signupResponse.getSignupResponse());
+            return signupResponse;
+        }
+    }
+
+    public LoginResponse login(UserLogin userLogin) throws NoSuchAlgorithmException {
+        LoginResponse loginResponse = new LoginResponse();
+        if(userAuthenticationModelRepo.findByUsername(userLogin.getUsername())!= null){
+            UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
+            userAuthenticationModel.setUsername(userLogin.getUsername());
+            userAuthenticationModel.setPassword(userLogin.getPassword());
+            String result = this.verify(userAuthenticationModel);
+            loginResponse.setJwtToken(result);
+        }
+        return loginResponse;
     }
 }

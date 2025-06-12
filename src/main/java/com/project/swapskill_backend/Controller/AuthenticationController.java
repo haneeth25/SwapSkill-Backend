@@ -28,28 +28,12 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public SignupResponse signUp(@RequestBody UserSignup userSignup){
-        UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
-        userAuthenticationModel.setId(UUID.randomUUID());
-        userAuthenticationModel.setUsername(userSignup.getUsername());
-        userAuthenticationModel.setPassword(userSignup.getPassword());
-        userAuthenticationModel.setEmail(userSignup.getEmail());
-        userAuthenticationModelRepo.save(userAuthenticationModel);
-        SignupResponse signupResponse = new SignupResponse();
-        signupResponse.setSignupResponse("User registerd");
-        return signupResponse;
+        return authenticationService.signup(userSignup);
     }
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody UserLogin userLogin) throws NoSuchAlgorithmException {
-        LoginResponse loginResponse = new LoginResponse();
-        if(userAuthenticationModelRepo.findByUsername(userLogin.getUsername())!= null){
-            UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
-            userAuthenticationModel.setUsername(userLogin.getUsername());
-            userAuthenticationModel.setPassword(userLogin.getPassword());
-            String result = authenticationService.verify(userAuthenticationModel);
-            loginResponse.setJwtToken(result);
-        }
-        return loginResponse;
+        return authenticationService.login(userLogin);
     }
 
     @PostMapping("/forget-password")
