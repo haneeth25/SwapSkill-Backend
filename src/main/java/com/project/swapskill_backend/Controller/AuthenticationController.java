@@ -10,12 +10,11 @@ import com.project.swapskill_backend.Service.SecurityService.AuthenticationServi
 import com.project.swapskill_backend.Service.SecurityService.CustomUserDetailService;
 import com.project.swapskill_backend.Service.SecurityService.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +34,17 @@ public class AuthenticationController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody UserLogin userLogin) throws NoSuchAlgorithmException {
         return authenticationService.login(userLogin);
+    }
+
+    @PostMapping("/forget-password")
+    public ResponseEntity<String> forgetPassword(@RequestBody Map<String, String> request) throws NoSuchAlgorithmException{
+        authenticationService.forgetPassword(request.get("email"));
+        return ResponseEntity.ok("Reset link sent to your email");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request){
+        return ResponseEntity.ok(authenticationService.resetPassword(request));
     }
 
 }
