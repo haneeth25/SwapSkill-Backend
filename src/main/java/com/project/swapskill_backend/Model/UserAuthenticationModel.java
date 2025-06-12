@@ -2,6 +2,8 @@ package com.project.swapskill_backend.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
 import java.util.UUID;
 
@@ -12,6 +14,9 @@ public class UserAuthenticationModel {
     public String username;
     public String email;
     public String password;
+
+    @OneToOne(mappedBy = "userAuthenticationModel")
+    private UserProfileModel userProfileModel;
 
     public UUID getId() {
         return id;
