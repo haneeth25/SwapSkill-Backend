@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -23,13 +24,19 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     CustomUserDetailService customUserDetailService;
 
+    private boolean isExcludedPath(String path) {
+        return path.startsWith("/auth/") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs");
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String token = "";
         String username = "";
         String path = request.getServletPath();
-        if (path.equals("/auth/login") || path.equals("/auth/signup")) {
+        if (isExcludedPath(path)) {
             filterChain.doFilter(request, response);
             return;
         }
