@@ -12,6 +12,7 @@ public class UserProfileModel {
     @Id
     private UUID profileId;
     private String fullName;
+    @Column(columnDefinition = "TEXT")
     private String profilePhoto;
     private String currentJob;
     private String bio;
