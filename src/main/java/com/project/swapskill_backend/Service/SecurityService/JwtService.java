@@ -22,7 +22,7 @@ public class JwtService {
 
     // Token validity in milliseconds (24 hours)
     //    24 * 60 * 60 * 1000;
-    private static final long JWT_TOKEN_VALIDITY = 2 * 60 * 1000;
+    private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
 
     public static String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
