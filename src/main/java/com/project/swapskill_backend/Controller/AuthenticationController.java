@@ -29,9 +29,15 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public SignupResponse signUp(@RequestBody UserSignup userSignup){
+    public SignupResponse signUp(@RequestBody UserSignup userSignup) throws NoSuchAlgorithmException {
         log.info("Received request at '/signup' endpoint.");
-        return authenticationService.signup(userSignup);
+        SignupResponse signupResponse = authenticationService.signup(userSignup);
+        UserLogin userLogin = new UserLogin();
+        userLogin.setUsername(signupResponse.getUsername());
+        userLogin.setPassword(signupResponse.getPassword());
+        LoginResponse loginResponse = authenticationService.login(userLogin);
+        signupResponse.setJwtToken(loginResponse.getJwtToken());
+        return signupResponse;
     }
 
     @PostMapping("/login")

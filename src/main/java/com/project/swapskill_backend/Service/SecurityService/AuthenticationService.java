@@ -117,7 +117,7 @@ public class AuthenticationService {
         return "Password successfully reset.";
     }
 
-    public SignupResponse signup(UserSignup userSignup) {
+    public SignupResponse signup(UserSignup userSignup) throws NoSuchAlgorithmException {
         log.info("Started Account creation for : "+userSignup.getUsername());
         SignupResponse signupResponse = new SignupResponse();
         if(userAuthenticationModelRepo.findByEmail(userSignup.getEmail())!=null){
@@ -138,6 +138,8 @@ public class AuthenticationService {
             userAuthenticationModel.setPassword(userSignup.getPassword());
             userAuthenticationModel.setEmail(userSignup.getEmail());
             userAuthenticationModelRepo.save(userAuthenticationModel);
+            signupResponse.setUsername(userSignup.getUsername());
+            signupResponse.setPassword(userSignup.getPassword());
             signupResponse.setSignupResponse("User registerd");
             log.info("Account created for : "+userSignup.getUsername());
             return signupResponse;
