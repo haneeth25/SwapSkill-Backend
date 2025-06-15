@@ -133,7 +133,6 @@ public class AuthenticationService {
             signupResponse.setSignupResponse("User exists");
             log.info("Username exists - Failed to create account");
             return signupResponse;
-
         }
         else {
             UserAuthenticationModel userAuthenticationModel = new UserAuthenticationModel();
