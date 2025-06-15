@@ -7,8 +7,10 @@ import com.project.swapskill_backend.DTO.Request.UserSignup;
 import com.project.swapskill_backend.DTO.Response.LoginResponse;
 import com.project.swapskill_backend.DTO.Response.SignupResponse;
 import com.project.swapskill_backend.Model.UserAuthenticationModel;
+import com.project.swapskill_backend.Model.UserProfileModel;
 import com.project.swapskill_backend.Repository.PasswordResetTokenRepo;
 import com.project.swapskill_backend.Repository.UserAuthenticationModelRepo;
+import com.project.swapskill_backend.Repository.UserProfileModelRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -36,6 +38,8 @@ public class AuthenticationService {
     JwtService jwtService;
     @Autowired
     UserAuthenticationModelRepo userAuthenticationModelRepo;
+    @Autowired
+    UserProfileModelRepo userProfileModelRepo;
     @Autowired
     PasswordResetTokenRepo passwordResetTokenRepo;
     @Autowired
@@ -154,6 +158,11 @@ public class AuthenticationService {
             userAuthenticationModel.setPassword(userLogin.getPassword());
             String result = this.verify(userAuthenticationModel);
             loginResponse.setJwtToken(result);
+            UserAuthenticationModel userAuthenticationModel1=userAuthenticationModelRepo.findByUsername(userLogin.getUsername());
+            UserProfileModel userProfileModel=userProfileModelRepo.findByUserId(userAuthenticationModel1.getId());
+            if(userProfileModel!=null) {
+                loginResponse.setProfilePhoto(userProfileModel.getProfilePhoto());
+            }
         }
         else{
             log.info("Username : "+ userLogin.getUsername() +" doesn't exist - Unable to login");
