@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface UserProfileModelRepo extends JpaRepository<UserProfileModel, UUID> {
-    @Query("select e from UserProfileModel e where e.profileId=:profileid")
-    UserProfileModel findByProfileId(UUID profileid);
+    @Query("select e from UserProfileModel e where e.profileId=:profileId")
+    UserProfileModel findByProfileId(UUID profileId);
 }
