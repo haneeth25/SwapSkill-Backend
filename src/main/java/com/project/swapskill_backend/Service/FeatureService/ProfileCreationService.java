@@ -4,17 +4,17 @@ import com.project.swapskill_backend.DTO.Request.ProfileCreationRequest;
 import com.project.swapskill_backend.Model.*;
 import com.project.swapskill_backend.Repository.*;
 import jakarta.transaction.Transactional;
-import org.apache.catalina.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ProfileCreationService {
 
     @Autowired
@@ -30,6 +30,7 @@ public class ProfileCreationService {
 
     @Transactional
     public String createProfile(ProfileCreationRequest profileCreationRequest , String userName){
+        log.info("Started profile creation for :"+userName);
         UserProfileModel userProfileModel = new UserProfileModel();
         userProfileModel.setProfileId(UUID.randomUUID());
         userProfileModel.setFullName(profileCreationRequest.getFullName());
@@ -40,6 +41,7 @@ public class ProfileCreationService {
         // Mapping user with authentication model
         UserAuthenticationModel userAuthenticationModel = userAuthenticationModelRepo.findByUsername(userName);
         if(userAuthenticationModel == null){
+            log.info("User " + userName +" doesn't exist");
             return "User doesn't exist";
         }
         else{
@@ -92,6 +94,7 @@ public class ProfileCreationService {
             }
         }).toList();
 
+        log.info("Profile created for : "+userName);
         return "Done";
     }
 }

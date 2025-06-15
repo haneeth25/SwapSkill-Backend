@@ -9,6 +9,7 @@ import com.project.swapskill_backend.Repository.UserAuthenticationModelRepo;
 import com.project.swapskill_backend.Service.SecurityService.AuthenticationService;
 import com.project.swapskill_backend.Service.SecurityService.CustomUserDetailService;
 import com.project.swapskill_backend.Service.SecurityService.JwtService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthenticationController {
 
     @Autowired
@@ -28,11 +30,13 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public SignupResponse signUp(@RequestBody UserSignup userSignup){
+        log.info("Received request at '/signup' endpoint.");
         return authenticationService.signup(userSignup);
     }
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody UserLogin userLogin) throws NoSuchAlgorithmException {
+        log.info("Received request at '/login' endpoint.");
         return authenticationService.login(userLogin);
     }
 
