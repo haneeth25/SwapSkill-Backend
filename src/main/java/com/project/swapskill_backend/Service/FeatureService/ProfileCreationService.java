@@ -1,6 +1,7 @@
 package com.project.swapskill_backend.Service.FeatureService;
 
 import com.project.swapskill_backend.DTO.Request.ProfileCreationRequest;
+import com.project.swapskill_backend.DTO.Response.ProfileUpdationResponse;
 import com.project.swapskill_backend.DTO.Response.UserDetailsResponse;
 import com.project.swapskill_backend.Model.*;
 import com.project.swapskill_backend.Pojos.KeyValueMapper;
@@ -106,9 +107,10 @@ public class ProfileCreationService {
         log.info("Received request at '/userDetails' endpoint");
         UserProfileModel profileCreationRequest = userProfileModelRepo.findByUserId(userId);
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-        userDetailsResponse.setFullName(profileCreationRequest.getFullName());
+        userDetailsResponse.setUserName(userName);
         userDetailsResponse.setCurrentJob(profileCreationRequest.getCurrentJob());
         userDetailsResponse.setBio(profileCreationRequest.getBio());
+        userDetailsResponse.setProfilePhoto(profileCreationRequest.getProfilePhoto());
 
         List<UserSkillRatingModel> userSkillRatings = profileCreationRequest.getUserSkillRatings();
 
@@ -134,4 +136,5 @@ public class ProfileCreationService {
         log.info("Profile details fetched for user : " +userName);
         return userDetailsResponse;
     }
+
 }
