@@ -2,7 +2,14 @@ package com.project.swapskill_backend.Controller;
 
 import com.project.swapskill_backend.DTO.Request.ProfileCreationRequest;
 import com.project.swapskill_backend.DTO.Response.UserDetailsResponse;
+import com.project.swapskill_backend.Model.AvailableDayModel;
+import com.project.swapskill_backend.Model.UserAuthenticationModel;
+import com.project.swapskill_backend.Model.UserProfileModel;
+import com.project.swapskill_backend.Model.UserSkillRatingModel;
 import com.project.swapskill_backend.Pojos.KeyValueMapper;
+import com.project.swapskill_backend.Repository.UserAuthenticationModelRepo;
+import com.project.swapskill_backend.Repository.UserProfileModelRepo;
+import com.project.swapskill_backend.Repository.UserSkillRatingModelRepo;
 import com.project.swapskill_backend.Service.FeatureService.ProfileCreationService;
 import com.project.swapskill_backend.Utils.SwapSkillUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +25,15 @@ public class ProfileController {
     @Autowired
     ProfileCreationService profileCreationService;
 
+    @Autowired
+    UserAuthenticationModelRepo userAuthenticationModelRepo;
+
+    @Autowired
+    UserProfileModelRepo userProfileModelRepo;
+
+    @Autowired
+    UserSkillRatingModelRepo userSkillRatingModelRepo;
+
     @PostMapping("/profileCreation")
     public String createProfile(
             @RequestHeader("Authorization") String authHeader,
@@ -27,30 +43,41 @@ public class ProfileController {
         log.info("Received request at '/profileCreation' endpoint.");
         return profileCreationService.createProfile(profileCreationRequest,username);
     }
+
     @GetMapping("/userDetails")
     public UserDetailsResponse getUserDetails(
             @RequestHeader("Authorization") String authHeader
     ){
         String username = SwapSkillUtils.getUsername(authHeader);
+        UUID userId=userAuthenticationModelRepo.findByUsername(username).getId();
         log.info("Received request at '/userDetails' endpoint");
-        ProfileCreationRequest profileCreationRequest = new ProfileCreationRequest();
+        UserProfileModel profileCreationRequest = userProfileModelRepo.findByUserId(userId);
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-        userDetailsResponse.setFullName("Haneeth Kosaraju");
-        userDetailsResponse.setCurrentJob("Software developer");
-        userDetailsResponse.setBio("Hi I amm haneeth");
-        Map<String,Integer> skillsAndRating = new HashMap<>();
-        skillsAndRating.put("Python",3);
-        skillsAndRating.put("Java",4);
-        List<KeyValueMapper<String , Integer>> finalSkillsAndRating = new ArrayList<>();
-        for(Map.Entry<String , Integer> entry : skillsAndRating.entrySet()){
-            KeyValueMapper keyValueMapper = new KeyValueMapper();
-            keyValueMapper.setKey(entry.getKey());
-            keyValueMapper.setValue(entry.getValue());
+        userDetailsResponse.setFullName(profileCreationRequest.getFullName());
+        userDetailsResponse.setCurrentJob(profileCreationRequest.getCurrentJob());
+        userDetailsResponse.setBio(profileCreationRequest.getBio());
+
+        List<UserSkillRatingModel> userSkillRatings = profileCreationRequest.getUserSkillRatings();
+
+        List<KeyValueMapper<String, Integer>> finalSkillsAndRating = new ArrayList<>();
+
+        for (UserSkillRatingModel ratingModel : userSkillRatings) {
+            String skillName = ratingModel.getSkills().getSkillName(); // Assuming SkillsModel has getSkillName()
+            Integer rating = ratingModel.getRating();
+
+            KeyValueMapper<String, Integer> keyValueMapper = new KeyValueMapper<>();
+            keyValueMapper.setKey(skillName);
+            keyValueMapper.setValue(rating);
             finalSkillsAndRating.add(keyValueMapper);
         }
-        List<String> availableDays = Arrays.asList("monday","tuesday");
-        userDetailsResponse.setAvailableDays(availableDays);
         userDetailsResponse.setSkillsAndRating(finalSkillsAndRating);
+
+        Set<AvailableDayModel> availableDaysSet = profileCreationRequest.getAvailableDays();
+        List<String> availableDays = new ArrayList<>();
+        for (AvailableDayModel day : availableDaysSet) {
+            availableDays.add(day.getAvailableDay()); // Assuming AvailableDayModel has a getDay()
+        }
+        userDetailsResponse.setAvailableDays(availableDays);
         return userDetailsResponse;
     }
 }
