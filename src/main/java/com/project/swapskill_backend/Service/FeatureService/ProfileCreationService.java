@@ -1,13 +1,16 @@
 package com.project.swapskill_backend.Service.FeatureService;
 
 import com.project.swapskill_backend.DTO.Request.ProfileCreationRequest;
+import com.project.swapskill_backend.DTO.Response.UserDetailsResponse;
 import com.project.swapskill_backend.Model.*;
+import com.project.swapskill_backend.Pojos.KeyValueMapper;
 import com.project.swapskill_backend.Repository.*;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -96,5 +99,39 @@ public class ProfileCreationService {
 
         log.info("Profile created for : "+userName);
         return "Done";
+    }
+
+    public UserDetailsResponse getDetailsResponse(String userName){
+        UUID userId=userAuthenticationModelRepo.findByUsername(userName).getId();
+        log.info("Received request at '/userDetails' endpoint");
+        UserProfileModel profileCreationRequest = userProfileModelRepo.findByUserId(userId);
+        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
+        userDetailsResponse.setFullName(profileCreationRequest.getFullName());
+        userDetailsResponse.setCurrentJob(profileCreationRequest.getCurrentJob());
+        userDetailsResponse.setBio(profileCreationRequest.getBio());
+
+        List<UserSkillRatingModel> userSkillRatings = profileCreationRequest.getUserSkillRatings();
+
+        List<KeyValueMapper<String, Integer>> finalSkillsAndRating = new ArrayList<>();
+
+        for (UserSkillRatingModel ratingModel : userSkillRatings) {
+            String skillName = ratingModel.getSkills().getSkillName(); // Assuming SkillsModel has getSkillName()
+            Integer rating = ratingModel.getRating();
+
+            KeyValueMapper<String, Integer> keyValueMapper = new KeyValueMapper<>();
+            keyValueMapper.setKey(skillName);
+            keyValueMapper.setValue(rating);
+            finalSkillsAndRating.add(keyValueMapper);
+        }
+        userDetailsResponse.setSkillsAndRating(finalSkillsAndRating);
+
+        Set<AvailableDayModel> availableDaysSet = profileCreationRequest.getAvailableDays();
+        List<String> availableDays = new ArrayList<>();
+        for (AvailableDayModel day : availableDaysSet) {
+            availableDays.add(day.getAvailableDay()); // Assuming AvailableDayModel has a getDay()
+        }
+        userDetailsResponse.setAvailableDays(availableDays);
+        log.info("Profile details fetched for user : " +userName);
+        return userDetailsResponse;
     }
 }
