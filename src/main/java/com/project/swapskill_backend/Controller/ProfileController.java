@@ -49,35 +49,7 @@ public class ProfileController {
             @RequestHeader("Authorization") String authHeader
     ){
         String username = SwapSkillUtils.getUsername(authHeader);
-        UUID userId=userAuthenticationModelRepo.findByUsername(username).getId();
-        log.info("Received request at '/userDetails' endpoint");
-        UserProfileModel profileCreationRequest = userProfileModelRepo.findByUserId(userId);
-        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-        userDetailsResponse.setFullName(profileCreationRequest.getFullName());
-        userDetailsResponse.setCurrentJob(profileCreationRequest.getCurrentJob());
-        userDetailsResponse.setBio(profileCreationRequest.getBio());
-
-        List<UserSkillRatingModel> userSkillRatings = profileCreationRequest.getUserSkillRatings();
-
-        List<KeyValueMapper<String, Integer>> finalSkillsAndRating = new ArrayList<>();
-
-        for (UserSkillRatingModel ratingModel : userSkillRatings) {
-            String skillName = ratingModel.getSkills().getSkillName(); // Assuming SkillsModel has getSkillName()
-            Integer rating = ratingModel.getRating();
-
-            KeyValueMapper<String, Integer> keyValueMapper = new KeyValueMapper<>();
-            keyValueMapper.setKey(skillName);
-            keyValueMapper.setValue(rating);
-            finalSkillsAndRating.add(keyValueMapper);
-        }
-        userDetailsResponse.setSkillsAndRating(finalSkillsAndRating);
-
-        Set<AvailableDayModel> availableDaysSet = profileCreationRequest.getAvailableDays();
-        List<String> availableDays = new ArrayList<>();
-        for (AvailableDayModel day : availableDaysSet) {
-            availableDays.add(day.getAvailableDay()); // Assuming AvailableDayModel has a getDay()
-        }
-        userDetailsResponse.setAvailableDays(availableDays);
-        return userDetailsResponse;
+        log.info("Received request at '/userDetails' endpoint.");
+        return profileCreationService.getDetailsResponse(username);
     }
 }
