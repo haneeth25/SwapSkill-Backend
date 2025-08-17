@@ -7,19 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 public class UserDetailsResponse {
-    private String fullName;
+    private String userName;
     private String profilePhoto;
     private String currentJob;
     private String bio;
     private List<KeyValueMapper<String, Integer>>skillsAndRating;
     private List<String> availableDays;
 
-    public String getFullName() {
-        return fullName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getProfilePhoto() {
