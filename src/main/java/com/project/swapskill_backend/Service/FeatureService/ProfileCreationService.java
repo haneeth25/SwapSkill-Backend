@@ -1,7 +1,6 @@
 package com.project.swapskill_backend.Service.FeatureService;
 
 import com.project.swapskill_backend.DTO.Request.ProfileCreationRequest;
-import com.project.swapskill_backend.DTO.Response.ProfileUpdationResponse;
 import com.project.swapskill_backend.DTO.Response.UserDetailsResponse;
 import com.project.swapskill_backend.Model.*;
 import com.project.swapskill_backend.Pojos.KeyValueMapper;
