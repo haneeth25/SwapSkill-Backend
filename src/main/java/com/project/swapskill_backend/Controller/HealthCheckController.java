@@ -13,4 +13,10 @@ public class HealthCheckController {
         return "OK";
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/status")
+    public String healthStatusCheck() {
+        return "200";
+    }
+
 }
